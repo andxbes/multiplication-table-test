@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 
 // --- Константы для настройки теста ---
 const TOTAL_QUESTIONS = 10 // Загальна кількість питань у тесті
@@ -17,6 +17,7 @@ function Game({ onTestComplete }) {
     const [score, setScore] = useState(0)
     const [questionNumber, setQuestionNumber] = useState(1)
     const [feedback, setFeedback] = useState({ message: '', color: '' })
+    const inputRef = useRef(null)
 
     // --- Функция для генерации нового примера ---
     const generateNewProblem = () => {
@@ -30,6 +31,13 @@ function Game({ onTestComplete }) {
     useEffect(() => {
         generateNewProblem()
     }, [])
+
+    // --- Ефект для фокусування на полі вводу ---
+    useEffect(() => {
+        if (inputRef.current && !feedback.message) {
+            inputRef.current.focus()
+        }
+    }, [num1, num2, feedback.message]) // Запускається, коли генерується новий приклад
 
     // --- Обработчик отправки ответа ---
     const handleSubmit = (e) => {
@@ -71,6 +79,7 @@ function Game({ onTestComplete }) {
 
             <form onSubmit={handleSubmit}>
                 <input
+                    ref={inputRef}
                     type="number"
                     value={userAnswer}
                     onChange={(e) => setUserAnswer(e.target.value)}
