@@ -2,7 +2,8 @@ import { useState, useEffect, useRef } from 'react'
 
 // --- Константы для настройки теста ---
 const TOTAL_QUESTIONS = 10 // Загальна кількість питань у тесті
-const MAX_NUMBER = 10 // Максимальне число для множення (від 1 до 10)
+const MAX_NUMBER = 10      // Максимальне число для множення (від 1 до 10)
+const TIME_LIMIT = 40      // Час на відповідь у секундах
 
 // --- Вспомогательная функция для генерации случайного числа ---
 function getRandomNumber(max) {
@@ -17,6 +18,7 @@ function Game({ onTestComplete }) {
     const [score, setScore] = useState(0)
     const [questionNumber, setQuestionNumber] = useState(1)
     const [feedback, setFeedback] = useState({ message: '', color: '' })
+    const [timeLeft, setTimeLeft] = useState(TIME_LIMIT)
     const inputRef = useRef(null)
 
     // --- Функция для генерации нового примера ---
@@ -25,12 +27,45 @@ function Game({ onTestComplete }) {
         setNum2(getRandomNumber(MAX_NUMBER))
         setUserAnswer('') // Очищуємо поле вводу
         setFeedback({ message: '', color: '' }) // Скидаємо зворотний зв'язок
+        setTimeLeft(TIME_LIMIT) // Скидаємо таймер
     }
 
     // --- Запускаємо генерацію першого прикладу при завантаженні компонента ---
     useEffect(() => {
         generateNewProblem()
     }, [])
+
+    // --- Ефект для таймера ---
+    useEffect(() => {
+        // Не запускати таймер, якщо є повідомлення або гра завершена
+        if (feedback.message) return
+
+        // Якщо час вийшов, обробляємо це як неправильну відповідь
+        if (timeLeft === 0) {
+            setFeedback({
+                message: `Час вийшов! Правильна відповідь: ${num1 * num2}`,
+                color: 'text-orange-500',
+            })
+            // Використовуємо setTimeout для переходу до наступного питання
+            setTimeout(() => {
+                if (questionNumber < TOTAL_QUESTIONS) {
+                    setQuestionNumber(questionNumber + 1)
+                    generateNewProblem()
+                } else {
+                    onTestComplete({ score: score, total: TOTAL_QUESTIONS })
+                }
+            }, 1500)
+            return
+        }
+
+        // Запускаємо інтервал, який щосекунди зменшує час
+        const timerId = setInterval(() => {
+            setTimeLeft(timeLeft - 1)
+        }, 1000)
+
+        // Очищуємо інтервал при зміні стану або розмонтуванні компонента
+        return () => clearInterval(timerId)
+    }, [timeLeft, feedback.message])
 
     // --- Ефект для фокусування на полі вводу ---
     useEffect(() => {
@@ -70,8 +105,13 @@ function Game({ onTestComplete }) {
     }
 
     return (
-        <div className="w-full max-w-md p-8 bg-white rounded-xl shadow-lg text-center">
-            <div className="flex justify-between items-center mb-6 text-gray-600">
+        <div className="w-full max-w-md p-8 bg-white rounded-xl shadow-lg text-center relative">
+            {/* Таймер */}
+            <div className="absolute top-4 right-4 text-lg font-bold text-red-500">
+                Час: {timeLeft}
+            </div>
+
+            <div className="flex justify-between items-center mb-6 text-gray-600 pt-4">
                 <span className="font-semibold">Питання: {questionNumber} / {TOTAL_QUESTIONS}</span>
                 <span className="font-semibold">Рахунок: {score}</span>
             </div>
