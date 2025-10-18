@@ -8,10 +8,8 @@ export default defineConfig(({ command }) => {
     plugins: [react(), tailwindcss()],
     base: '/',
   }
-
   if (command === 'build') {
     config.base = '/multiplication-table-test/'
   }
-
   return config
 })
