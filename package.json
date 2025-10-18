@@ -1,6 +1,7 @@
 {
   "name": "multiplication-table-test",
   "version": "0.1.0",
+  "homepage": "https://andxbes.github.io/multiplication-table-test/",
   "private": true,
   "dependencies": {
     "@testing-library/dom": "^10.4.1",
@@ -9,14 +10,16 @@
     "@testing-library/user-event": "^14.6.1",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
-    "react-scripts": "^0.0.0",
+    "react-scripts": "^5.0.1",
     "web-vitals": "^5.1.0"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
   },
   "eslintConfig": {
     "extends": [

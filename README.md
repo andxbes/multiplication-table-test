@@ -73,3 +73,5 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/t
 
 ### Github Pages 
 [https://github.com/gitname/react-gh-pages](https://github.com/gitname/react-gh-pages)
+
+`npm run deploy`
