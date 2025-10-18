@@ -44,8 +44,10 @@ function Game({ onTestComplete }) {
         e.preventDefault()
         if (userAnswer === '' || feedback.message) return // Не відправляти порожню відповідь або під час показу фідбеку
 
+        const isCorrect = parseInt(userAnswer, 10) === num1 * num2
+
         const correctAnswer = num1 * num2
-        if (parseInt(userAnswer, 10) === correctAnswer) {
+        if (isCorrect) {
             setScore(score + 1)
             setFeedback({ message: 'Правильно! 🎉', color: 'text-green-500' })
         } else {
@@ -61,7 +63,8 @@ function Game({ onTestComplete }) {
                 setQuestionNumber(questionNumber + 1)
                 generateNewProblem()
             } else {
-                onTestComplete({ score, total: TOTAL_QUESTIONS })
+                const finalScore = isCorrect ? score + 1 : score
+                onTestComplete({ score: finalScore, total: TOTAL_QUESTIONS })
             }
         }, 1500)
     }
